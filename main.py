@@ -1,5 +1,6 @@
+import argparse
 import numpy as np
-from data import X_train, X_test, y_train, y_test
+from data import X_train, X_test, y_train, y_test, FILENAME
 from models import evaluate_baseline
 from models import fitness_function
 from models import DEFAULT_MODEL
@@ -14,37 +15,83 @@ from joblib import Parallel, delayed
 import copy
 
 warnings.filterwarnings("ignore")
+
+
+def parse_args():
+    parser = argparse.ArgumentParser(
+        description="Genetic Algorithm for Feature Selection"
+    )
+    parser.add_argument(
+        "--dataset",
+        default=FILENAME,
+        type=str,
+        help=f"Path to the CSV dataset (default: {FILENAME})",
+    )
+    parser.add_argument(
+        "--generations",
+        type=int,
+        default=100,
+        help="Number of generations (default: 100)",
+    )
+    parser.add_argument(
+        "--penalty",
+        type=float,
+        default=0.01,
+        help="Penalty for using too many features (default: 0.05)",
+    )
+    parser.add_argument(
+        "--population-size",
+        type=int,
+        default=30,
+        help="Number of chromosomes per generation (default: 30)",
+    )
+    parser.add_argument(
+        "--mutation-rate",
+        type=float,
+        default=0.02,
+        help="Probability of bit flip during mutation (default: 0.02)",
+    )
+    parser.add_argument(
+        "--model",
+        type=str,
+        default="logistic",
+        choices=["logistic", "random-forest"],
+        help="Classifier to use: logistic or random-forest (default: logistic)",
+    )
+    parser.add_argument(
+        "--scoring",
+        type=str,
+        default="roc_auc",
+        choices=["roc_auc", "accuracy", "f1"],
+        help="Scoring metric for fitness evaluation (default: roc_auc)",
+    )
+    return parser.parse_args()
+
+
 #  два ключових параметри, підбирати супер акуратно і малнькими кроками
-N_GENERATION = 100
-PENALTY = 0.05
+N_GENERATION = 30
+PENALTY = 0.1
 NO_IMPROVE_LIMIT = int(
-    N_GENERATION * 0.4
+    N_GENERATION * 1
 )  # ліміт для зупинки алгоритмку у випадку, якщо не покращується метрика,
 # ставити максимально великий, якщо ціль - найкраща метрика
-
-print(
-    f"К-сть поколінь: {N_GENERATION}, \n Штраф: {PENALTY}, \n Ліміт зупинки {NO_IMPROVE_LIMIT}, \n Модель: {DEFAULT_MODEL}"
-)
 
 
 def genetic_algorithm(
     X_train,
     y_train,
     feature_names,
-    model=None,
-    population_size: int = 5,
+    population_size: int = 15,
     # N_GENERATION: int = 40,
     crossover_rate: float = 0.8,
     mutation_rate: float = 0.05,
     tournament_k: int = 3,
     # PENALTY: float = 0.01,
-    cv: int = 5,
+    cv: int = 3,
     scoring: str = "roc_auc",
     verbose: bool = True,
 ):
 
-    if model is None:
-        model = DEFAULT_MODEL
     no_improve_count = 0
 
     X_np = X_train.values if hasattr(X_train, "values") else np.array(X_train)
@@ -87,6 +134,14 @@ def genetic_algorithm(
             no_improve_count = 0
         else:
             no_improve_count += 1
+        history.append(
+            {
+                "gen": gen + 1,
+                "best_fitness": float(best_fitness),
+                "avg_fitness": float(np.mean(fitness_scores)),
+                "n_selected": int(best_chromosome.sum()),
+            }
+        )
 
         if no_improve_count >= NO_IMPROVE_LIMIT:
             print(f"Рання зупинка на генерації {gen+1}")
@@ -124,18 +179,32 @@ def genetic_algorithm(
 
 
 if __name__ == "__main__":
+    args = parse_args()
+
+    N_GENERATION = args.generations
+    PENALTY = args.penalty
+
+    print(f"Geneerations amount: {N_GENERATION}, \nPenalty: {PENALTY}, \nStop limit \
+            {NO_IMPROVE_LIMIT}, \nModel: {DEFAULT_MODEL}")
+
     print("Start")
 
     base_model = DEFAULT_MODEL
     acc_base, f1_base, auc_base = evaluate_baseline(
         base_model, X_train, y_train, X_test, y_test
     )
+    print("Baseline:")
+    print(f"  Accuracy: {acc_base:.3f} | F1: {f1_base:.3f} | ROC-AUC: {auc_base:.3f}")
+
     model = DEFAULT_MODEL
     best_chromosome, selected_features, history = genetic_algorithm(
-        X_train, y_train, X_train.columns, model=model
+        X_train,
+        y_train,
+        X_train.columns,
+        population_size=args.population_size,
+        mutation_rate=args.mutation_rate,
+        scoring=args.scoring,
     )
-
-    print("Selected features:", selected_features)
 
     eval_model = DEFAULT_MODEL
     acc, f1, auc = evaluate_baseline(
@@ -156,3 +225,7 @@ if __name__ == "__main__":
     print(f"\nGA Model ({len(selected_features)} features):")
     print(f"  Accuracy: {acc:.3f} | F1: {f1:.3f} | ROC-AUC: {auc:.3f}")
     print("=" * 50)
+
+    from visualization import plot_results
+
+    plot_results(history, selected_features, X_train.columns.tolist())
