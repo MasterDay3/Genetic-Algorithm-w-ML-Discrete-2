@@ -4,16 +4,15 @@ from sklearn.metrics import accuracy_score, f1_score, roc_auc_score
 from sklearn.model_selection import cross_val_score
 import numpy as np
 from sklearn.ensemble import RandomForestClassifier
+from sklearn.pipeline import make_pipeline
+from sklearn.preprocessing import StandardScaler
+from sklearn.linear_model import LogisticRegression
 
 DEFAULT_SCORING = "roc_auc"
 # models.py
 
-DEFAULT_MODEL = RandomForestClassifier(n_estimators=100, random_state=42, n_jobs=-1)
-# DEFAULT_MODEL = LogisticRegression(
-#     max_iter=8000,
-#     random_state=67,
-#     solver="saga",
-# )
+# DEFAULT_MODEL = RandomForestClassifier(n_estimators=100, random_state=42, n_jobs=-1)
+DEFAULT_MODEL = make_pipeline(StandardScaler(), LogisticRegression(max_iter=10000))
 
 
 def evaluate_baseline(model, X_tr, y_tr, X_te, y_te):
