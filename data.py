@@ -15,8 +15,6 @@ FILENAME = "datasets/diabetes.csv"
 
 print(f"Loading dataset {FILENAME}")
 df = pd.read_csv(FILENAME)
-# if big dataset
-# df = pd.read_csv(FILENAME).sample(n=10000, random_state=42)
 df = df.drop_duplicates()
 
 
@@ -43,41 +41,44 @@ def convert_to_numeric(df):
     return df
 
 
+print(df.columns)
 if FILENAME == "datasets/working_hours.csv":
     leakage_features = [
-        "Destination Port",
         "Flow Bytes/s",
-        "Flow Packets/s",
-        "Flow Duration",
-        "Flow IAT Mean",
-        "Flow IAT Std",
-        "Flow IAT Max",
-        "Flow IAT Min",
+        " Flow Packets/s",
+        " Flow Duration",
+        " Flow IAT Mean",
+        " Flow IAT Std",
+        " Flow IAT Max",
+        " Flow IAT Min",
         "Fwd IAT Total",
-        "Fwd IAT Mean",
-        "Fwd IAT Std",
-        "Fwd IAT Max",
-        "Fwd IAT Min",
+        " Fwd IAT Mean",
+        " Fwd IAT Std",
+        " Fwd IAT Max",
+        " Fwd IAT Min",
         "Bwd IAT Total",
-        "Bwd IAT Mean",
-        "Bwd IAT Std",
-        "Bwd IAT Max",
-        "Bwd IAT Min",
+        " Bwd IAT Mean",
+        " Bwd IAT Std",
+        " Bwd IAT Max",
+        " Bwd IAT Min",
         "Active Mean",
-        "Active Std",
-        "Active Max",
-        "Active Min",
+        " Active Std",
+        " Active Max",
+        " Active Min",
         "Idle Mean",
-        "Idle Std",
-        "Idle Max",
-        "Idle Min",
+        " Idle Std",
+        " Idle Max",
+        " Idle Min",
         "Init_Win_bytes_forward",
-        "Init_Win_bytes_backward",
+        " Init_Win_bytes_backward",
+        "Destination Port",
     ]
+
     df = df.drop(columns=[c for c in leakage_features if c in df.columns])
 if FILENAME == "datasets/hospital_readmission.csv":
     df = df.drop(columns="readmission_risk_score")
 
+print(df.columns.tolist())
 
 df = convert_to_numeric(df)
 df = df.dropna()

@@ -18,18 +18,6 @@ def plot_results(
     selected_features: list[str],
     all_features: list[str],
 ) -> None:
-    """
-    Plots GA results after the algorithm finishes:
-      1. Fitness over generations (best & average)
-      2. Number of selected features over generations
-      3. Bar chart of selected vs. dropped features
-
-    Args:
-        history:          list of dicts returned by genetic_algorithm()
-                          keys: gen, best_fitness, avg_fitness, n_selected
-        selected_features: feature names chosen by the best chromosome
-        all_features:     full list of feature names before selection
-    """
     if not history:
         print("No history to plot.")
         return

@@ -1,18 +1,18 @@
+"""Main file with GA main func and Argparse"""
+
 import argparse
+import warnings
+from joblib import Parallel, delayed
+import copy
 import numpy as np
 from data import X_train, X_test, y_train, y_test, FILENAME
-from models import evaluate_baseline
-from models import fitness_function
-from models import DEFAULT_MODEL
+from models import evaluate_baseline, fitness_function, DEFAULT_MODEL
 from genetic_algorithm import (
     initialize_population,
     tournament_selection,
     crossover,
     mutation,
 )
-import warnings
-from joblib import Parallel, delayed
-import copy
 
 warnings.filterwarnings("ignore")
 
@@ -30,13 +30,13 @@ def parse_args():
     parser.add_argument(
         "--generations",
         type=int,
-        default=100,
+        default=50,
         help="Number of generations (default: 100)",
     )
     parser.add_argument(
         "--penalty",
         type=float,
-        default=0.01,
+        default=0.1,
         help="Penalty for using too many features (default: 0.05)",
     )
     parser.add_argument(
@@ -127,10 +127,6 @@ def genetic_algorithm(
         if fitness_scores[gen_best_idx] > best_fitness:
             best_fitness = fitness_scores[gen_best_idx]
             best_chromosome = population[gen_best_idx].copy()
-
-        if fitness_scores[gen_best_idx] > best_fitness:
-            best_fitness = fitness_scores[gen_best_idx]
-            best_chromosome = population[gen_best_idx].copy()
             no_improve_count = 0
         else:
             no_improve_count += 1
@@ -156,7 +152,7 @@ def genetic_algorithm(
                 f"{color}Gen {gen+1:>3}/{N_GENERATION} | "
                 f"best_fitness={best_fitness:.4f} | "
                 f"avg_fitness={fitness_scores.mean():.4f} | "
-                f"features={n_selected}/{n_features}{color}"
+                f"features={n_selected}/{n_features}\033[0m"
             )
 
         new_population = [best_chromosome.copy()]
@@ -220,7 +216,7 @@ if __name__ == "__main__":
     print("=" * 50)
     print(f"Features: {len(X_train.columns)} → {len(selected_features)}")
     print(f"Selected: {selected_features}")
-    print(f"\START (all features):")
+    print(f"START (all features):")
     print(f"  Accuracy: {acc_base:.3f} | F1: {f1_base:.3f} | ROC-AUC: {auc_base:.3f}")
     print(f"\nGA Model ({len(selected_features)} features):")
     print(f"  Accuracy: {acc:.3f} | F1: {f1:.3f} | ROC-AUC: {auc:.3f}")
