@@ -133,13 +133,4 @@ python main.py --generations 50 --penalty 0.05 --population-size 30 --model logi
 - Any categorical columns are automatically encoded
 
 ## Example Results
-```
-Features: 78 → 29
-
-Baseline (all features):
-  Accuracy: 0.927 | F1: 0.941 | ROC-AUC: 0.965
-
-GA Model (29 features):
-  Accuracy: 0.916 | F1: 0.932 | ROC-AUC: 0.965
-```
-> 78 features reduced to 29 with no loss in ROC-AUC
+<img width="1280" height="753" alt="telegram-cloud-photo-size-2-5474239975911006146-y" src="https://github.com/user-attachments/assets/a6259ed3-1536-4737-a58b-019423a9f3e4" />
