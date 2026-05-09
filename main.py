@@ -45,13 +45,13 @@ def parse_args():
     parser.add_argument(
         "--generations",
         type=int,
-        default=50,
+        default=150,
         help="Number of generations (default: 100)",
     )
     parser.add_argument(
         "--penalty",
         type=float,
-        default=0.1,
+        default=0.01,
         help="Penalty for using too many features (default: 0.05)",
     )
     parser.add_argument(
@@ -63,7 +63,7 @@ def parse_args():
     parser.add_argument(
         "--mutation-rate",
         type=float,
-        default=0.02,
+        default=0.03,
         help="Probability of bit flip during mutation (default: 0.02)",
     )
     parser.add_argument(
@@ -301,4 +301,17 @@ if __name__ == "__main__":
 
     from visualization import plot_results
 
-    plot_results(history, selected_features, X_train.columns.tolist())
+    delta_roc_auc = auc - auc_base
+    delta_acc = acc - acc_base
+    delta_f1 = f1 - f1_base
+    plot_results(
+        history,
+        selected_features,
+        X_train.columns.tolist(),
+        delta_roc_auc,
+        delta_acc,
+        delta_f1,
+        "LogisticRegression",
+        PENALTY,
+        5,
+    )

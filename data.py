@@ -8,14 +8,15 @@ from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import LabelEncoder
 
 # FILENAME = "datasets/heart.csv"
-FILENAME = "datasets/diabetes.csv"
+# FILENAME = "datasets/diabetes.csv"
 # FILENAME = "datasets/hospital_readmission.csv"
-# FILENAME = "datasets/working_hours.csv"
+FILENAME = "datasets/working_hours.csv"
 
 
 print(f"Loading dataset {FILENAME}")
 df = pd.read_csv(FILENAME)
 df = df.drop_duplicates()
+df = df.sample(10000)
 
 
 def convert_to_numeric(df):
@@ -43,39 +44,39 @@ def convert_to_numeric(df):
 
 
 print(df.columns)
-if FILENAME == "datasets/working_hours.csv":
-    leakage_features = [
-        "Flow Bytes/s",
-        " Flow Packets/s",
-        " Flow Duration",
-        " Flow IAT Mean",
-        " Flow IAT Std",
-        " Flow IAT Max",
-        " Flow IAT Min",
-        "Fwd IAT Total",
-        " Fwd IAT Mean",
-        " Fwd IAT Std",
-        " Fwd IAT Max",
-        " Fwd IAT Min",
-        "Bwd IAT Total",
-        " Bwd IAT Mean",
-        " Bwd IAT Std",
-        " Bwd IAT Max",
-        " Bwd IAT Min",
-        "Active Mean",
-        " Active Std",
-        " Active Max",
-        " Active Min",
-        "Idle Mean",
-        " Idle Std",
-        " Idle Max",
-        " Idle Min",
-        "Init_Win_bytes_forward",
-        " Init_Win_bytes_backward",
-        "Destination Port",
-    ]
+# if FILENAME == "datasets/working_hours.csv":
+#     leakage_features = [
+#         "Flow Bytes/s",
+#         " Flow Packets/s",
+#         " Flow Duration",
+#         " Flow IAT Mean",
+#         " Flow IAT Std",
+#         " Flow IAT Max",
+#         " Flow IAT Min",
+#         "Fwd IAT Total",
+#         " Fwd IAT Mean",
+#         " Fwd IAT Std",
+#         " Fwd IAT Max",
+#         " Fwd IAT Min",
+#         "Bwd IAT Total",
+#         " Bwd IAT Mean",
+#         " Bwd IAT Std",
+#         " Bwd IAT Max",
+#         " Bwd IAT Min",
+#         "Active Mean",
+#         " Active Std",
+#         " Active Max",
+#         " Active Min",
+#         "Idle Mean",
+#         " Idle Std",
+#         " Idle Max",
+#         " Idle Min",
+#         "Init_Win_bytes_forward",
+#         " Init_Win_bytes_backward",
+#         "Destination Port",
+#     ]
 
-    df = df.drop(columns=[c for c in leakage_features if c in df.columns])
+# df = df.drop(columns=[c for c in leakage_features if c in df.columns])
 if FILENAME == "datasets/hospital_readmission.csv":
     df = df.drop(columns="readmission_risk_score")
 
