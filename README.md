@@ -118,10 +118,10 @@ python main.py --generations 50 --penalty 0.05 --population-size 30 --model logi
 | Parameter | Default | Description |
 |---|---|---|
 | `N_GENERATION` | 100 | Number of generations |
-| `PENALTY` | 0.01 | Penalty for using too many features |
+| `PENALTY` | 0.05 | Penalty for using too many features |
 | `population_size` | 30 | Number of chromosomes per generation |
 | `crossover_rate` | 0.8 | Probability of crossover |
-| `mutation_rate` | 0.05 | Probability of bit flip |
+| `mutation_rate` | 0.02 | Probability of bit flip |
 | `tournament_k` | 3 | Tournament selection size |
 | `cv` | 3 | Cross-validation folds |
 | `scoring` | roc_auc | Fitness scoring metric |
